@@ -1,8 +1,30 @@
-from flask import Flask, jsonify, request
 import logging
-
+import logging_loki
 import sentry_sdk
-from flask import Flask
+
+from multiprocessing import Queue
+
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+logging_loki.emitter.LokiEmitter.level_tag = "level"
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
+    handlers=[
+        logging.FileHandler("app.log"),
+        logging.StreamHandler(),
+        logging_loki.LokiQueueHandler(
+            Queue(-1),
+            url="http://loki:3100/loki/api/v1/push",  # TODO: configure your own Loki instance address
+            tags={"application": "backend-flask"},
+            # auth=("870215", "configured"),          # TODO: configure your own Loki instance auth
+            version="1",
+        ),
+    ]
+)
 
 sentry_sdk.init(
     # TODO: Replace the DSN below with your own DSN to see the events in your Sentry project
@@ -18,17 +40,6 @@ sentry_sdk.init(
     },
 )
 
-
-app = Flask(__name__)
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
-    handlers=[
-        logging.FileHandler("app.log"),
-        logging.StreamHandler()
-    ]
-)
 """
     Logs the incoming request information.
 """
@@ -85,9 +96,11 @@ Simulate an error
 """
 @app.route('/api/error', methods=['POST'])
 def trigger_error():
-    data = request.get_json()
-    logging.error(f"Simulated error: {data}")
-    1/0
+    try:
+        1/0
+    except Exception as e:
+        logging.error(f"Simulated error", exc_info=e)
+        sentry_sdk.capture_exception(e)
     return jsonify({"error": "This is a simulated error"}), 500
 
 
