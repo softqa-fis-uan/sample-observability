@@ -9,8 +9,7 @@ Sentry.init({
   // TODO: replace with your own DSN
   dsn: "https://123456789.ingest.sentry.io/123456789",
   integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration(),
+    new Sentry.BrowserTracing({}), new Sentry.Replay()
   ],
 
   // Set tracesSampleRate to 1.0 to capture 100%

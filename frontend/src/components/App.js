@@ -221,6 +221,14 @@ class App extends Component {
               Empty cart
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              throw new Error("Sentry Test Error");
+            }}
+          >
+            Break the world
+          </button>;
         </div>
       </div>
     );
