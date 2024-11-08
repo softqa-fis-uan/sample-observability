@@ -46,10 +46,10 @@ Esta aplicación de ejemplo muestra como integrar Sentry en una aplicación Flas
 
 Puede ir a http://localhost:5000 para acceder al API del backend. Existen varios endpoints que puede usar:
 
-- (GET /)[http://localhost:5000/] es el home del servicio.
-- (GET /api/data)[http://localhost:5000/api/data] retorna datos de ejemplo.
-- (POST /api/data)[http://localhost:5000/api/data] procesa datos haciendo echo.
-- (POST /api/error)[http://localhost:5000/api/error] genera un error de division de cero en el servicio.
+- [GET /](http://localhost:5000/) es el home del servicio.
+- [GET /api/data](http://localhost:5000/api/data) retorna datos de ejemplo.
+- [POST /api/data](http://localhost:5000/api/data) procesa datos haciendo un eco.
+- [POST /api/error](http://localhost:5000/api/error) genera un error de division de cero en el servicio.
 
 Puede usar cURL o su cliente HTTP preferido para acceder a ellos. Por ejemplo, para generar un error en el servicio puede usar
 
