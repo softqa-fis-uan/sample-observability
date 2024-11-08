@@ -1,0 +1,21 @@
+{
+    "name": "Observability",
+    "dockerComposeFile": [
+		"../docker-compose.yml",
+		"docker-compose.extend.yml"
+	],
+    "service": "app",
+    "workspaceFolder": "/project",
+    "forwardPorts": [5000,3000],
+    "shutdownAction": "stopCompose",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            },
+            "extensions": [
+                "ms-python.python"
+            ]
+        }
+    }
+}
