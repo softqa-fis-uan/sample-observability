@@ -7,9 +7,6 @@ services:
     build: ./backend
     ports:
       - "5000:5000"
-    environment:
-      STATSD_HOST: "statsd-exporter"
-      STATSD_PORT: "9125"
     networks:
       - observability
   frontend:
@@ -35,6 +32,17 @@ services:
     networks:
       - observability
 
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: 
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - observability
+
   grafana:
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
@@ -56,7 +64,12 @@ services:
           basicAuth: false
           isDefault: true
           version: 1
-          editable: false
+          editable: true
+        - name: Prometheus
+          type: prometheus
+          url: http://prometheus:9090
+          access: proxy
+          editable: true
         EOF
         /run.sh
     image: grafana/grafana:latest

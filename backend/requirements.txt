@@ -2,4 +2,6 @@ Flask==3.0.3
 gunicorn==20.1.0
 sentry-sdk==2.18.0
 python-logging-loki==0.3.1
-datadog==0.50.1
+prometheus-client
+uwsgi
+prometheus-flask-exporter==0.23.1

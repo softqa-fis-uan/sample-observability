@@ -17,4 +17,8 @@ COPY . .
 EXPOSE 5000
 
 # Command to run the application
-CMD ["python", "backend.py"]
+# CMD ["python", "backend.py"]
+# run with uwsgi
+CMD ["uwsgi", "--http", "0.0.0.0:5000", "--wsgi-file", "backend.py", "--callable", "app"] 
+# run with gunicorn
+# CMD ["gunicorn", "-b", "0.0.0.0:5000", "backend:app"] 

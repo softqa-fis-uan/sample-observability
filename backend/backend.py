@@ -6,15 +6,21 @@ from multiprocessing import Queue
 
 from flask import Flask, jsonify, request
 
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from prometheus_client import make_wsgi_app, Summary
+from prometheus_flask_exporter import PrometheusMetrics
+
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
+
 
 logging_loki.emitter.LokiEmitter.level_tag = "level"
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
     handlers=[
-        logging.FileHandler("app.log"),
+        # logging.FileHandler("app.log"),
         logging.StreamHandler(),
         logging_loki.LokiQueueHandler(
             Queue(-1),
@@ -40,24 +46,32 @@ sentry_sdk.init(
     },
 )
 
+# Add prometheus wsgi middleware to route /metrics requests
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+    '/metrics': make_wsgi_app()
+})
+# Create a metric to track time spent and requests made.
+REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing request')
+
 """
     Logs the incoming request information.
 """
 @app.before_request
 def log_request_info():
-    logging.debug(f"Request: {request.method} {request.url} {request.data}")
+    logging.info(f"Request: {request.method} {request.url} {request.data}")
 
 """
 Logs the outgoing response information.
 """
 @app.after_request
 def log_response_info(response):
-    logging.debug(f"Response: {response.status} {response.get_data(as_text=True)}")
+    logging.info(f"Response: {response.status} {response.get_data(as_text=True)}")
     return response
 
 """
  Home page
 """
+@REQUEST_TIME.time()
 @app.route('/')
 def home():
     return "<h1>Welcome!</h1>", 200
