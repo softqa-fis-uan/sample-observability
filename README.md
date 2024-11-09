@@ -29,6 +29,31 @@ Este proyecto usa contenedores por lo que necesitará tener instalado Docker. **
 
 La aplicación esta compuesta por varios servicios: 
 
+```mermaid
+architecture-beta
+   group frontend(cloud)[Frontend]
+   group api(cloud)[Backend]
+   group observability(cloud)[Observability tools]
+
+   service react(logos:react)[Frontend] in frontend
+   service flask(logos:flask)[Flask] in api
+   service loki(database)[Loki] in observability
+   service promtail(disk)[Promtail] in observability
+   service cadvisor(logos:docker)[cAdvisor] in observability
+   service prometheus(logos:prometheus)[Prometheus] in observability
+   service grafana(logos:grafana)[Grafana] in observability
+
+   react:B --> T:flask
+   react:R --> L:loki
+   flask:R --> L:loki
+   flask:R --> L:prometheus
+   loki:R --> L:promtail
+   promtail:R --> L:grafana
+   cadvisor:T --> B:grafana
+   prometheus:R --> L:grafana
+   
+```
+
 - Un [backend](backend) construido en Python con la librería Flask que expone un API REST.
 - Un [frontend](frontend) web construido en Javascript con el framework React.
 - [Loki](http://localhost:3100) para agregar, almacenar y consultar logs de manera eficiente.
