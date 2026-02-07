@@ -1,0 +1,21 @@
+name: Build and Test 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build with Docker compose
+      run: docker compose build
+    - name: Start services
+      run: docker compose up -d
+    - name: Test
+      run: curl http://localhost:5000/api/data
+    - name: Tear down
+      run: docker compose down
