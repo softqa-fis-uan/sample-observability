@@ -17,3 +17,5 @@ jobs:
       run: docker compose up -d
     - name: Test
       run: curl http://localhost:5000/api/data
+    - name: Tear down
+      run: docker compose down
