@@ -1,5 +1,5 @@
 {
-  "name": "frontend-tutorial-2",
+  "name": "frontend-react",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -25,6 +25,8 @@
     "webpack-dev-server": "^4.15.2"
   },
   "dependencies": {
+    "@grafana/faro-react": "^2.2.2",
+    "@grafana/faro-web-sdk": "^2.2.2",
     "@sentry/react": "^7.119.2",
     "react": "^18.3.1",
     "react-dom": "^18.2.0"

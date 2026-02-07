@@ -37,6 +37,17 @@ module.exports = {
       directory: path.join(__dirname, "build"),
     },
     port: 3000,
+    // Proxy local /loki requests to the Loki instance to avoid CORS
+    // when running the dev server on the host. Docker-compose exposes
+    // Loki on localhost:3100, so we forward requests there.
+    proxy: {
+      '/loki': {
+        target: 'http://loki:3100',
+        changeOrigin: true,
+        secure: false,
+        logLevel: 'warn'
+      }
+    },
   },
   module: {
     // exclude node_modules
