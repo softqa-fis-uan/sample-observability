@@ -5,7 +5,15 @@
 
 version: 2
 updates:
-  - package-ecosystem: "docker-compose" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "docker-compose" 
+    directory: "/" 
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "python" 
+    directory: "/backend" 
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pnpm" 
+    directory: "/frontend" 
     schedule:
       interval: "weekly"
