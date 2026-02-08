@@ -27,7 +27,7 @@ wait_for() {
 dump_logs_and_exit() {
   echo "\n--- Dumping docker compose logs for debugging ---\n"
   # Collect logs from all services
-  docker compose logs --no-color --timestamps || true
+  docker compose logs --timestamps || true
   echo "\n--- End logs ---\n"
   # Tear down and exit non-zero
   docker compose down || true
@@ -38,7 +38,8 @@ dump_logs_and_exit() {
 checks=(
   "http://localhost:5000/api/data|backend (5000)"
   "http://localhost:3000/|frontend dev server (3000)"
-  "http://localhost:3100/loki/api/v1/labels|loki (3100)"
+  # Loki readiness: try /ready first (lighter), fall back to /loki/api/v1/labels
+  # The script handles this special-case below.
   "http://localhost:9090/-/ready|prometheus (9090)"
   "http://localhost:3200/api/health|grafana (3200)"
   "http://localhost:8080/metrics|cadvisor (8080)"
@@ -52,6 +53,16 @@ for entry in "${checks[@]}"; do
     dump_logs_and_exit
   fi
 done
+
+# Special-case Loki: try /ready first, then fallback to labels endpoint
+if wait_for "http://localhost:3100/ready" "loki (3100 readiness)"; then
+  echo "loki is ready"
+elif wait_for "http://localhost:3100/loki/api/v1/labels" "loki (3100 labels)"; then
+  echo "loki labels endpoint reachable"
+else
+  echo "Health check failed for loki (both /ready and /loki/api/v1/labels unreachable)"
+  dump_logs_and_exit
+fi
 
 echo "All checks passed."
 
