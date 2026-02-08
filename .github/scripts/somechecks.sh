@@ -40,26 +40,30 @@ dump_logs_and_exit() {
 
 # Services and endpoints to check (host ports from docker-compose)
 checks=(
-  # format: url|display name|max_timeout|connect_timeout
-  "http://localhost:5000/api/data|backend (5000)||"
-  "http://localhost:3000/|frontend dev server (3000)||"
+  # format: url|display name|max_timeout|connect_timeout|service_name
+  # service_name is used to selectively dump logs on failure (e.g. 'cadvisor')
+  "http://localhost:5000/api/data|backend (5000)|||backend"
+  "http://localhost:3000/|frontend dev server (3000)|||frontend"
   # Loki readiness: handled specially below (no entry here)
   "http://localhost:9090/-/ready|prometheus (9090)||"
-  "http://localhost:3200/api/health|grafana (3200)||"
+  "http://localhost:3200/api/health|grafana (3200)|||grafana"
   # cadvisor can be slow; set a larger max timeout (e.g. 30s) and a longer connect timeout (10s)
-  "http://localhost:8080/metrics|cadvisor (8080)|30|10"
+  "http://localhost:8080/metrics|cadvisor (8080)|30|10|cadvisor"
 )
 
 for entry in "${checks[@]}"; do
   url=${entry%%|*}
   rest=${entry#*|}
   name=${rest%%|*}
-  rest2=${rest#*|}
-  max_timeout=${rest2%%|*}
-  connect_timeout=${rest2##*|}
+  rest_after_name=${rest#*|}
+  max_timeout=${rest_after_name%%|*}
+  rest_after_max=${rest_after_name#*|}
+  connect_timeout=${rest_after_max%%|*}
+  svc=${rest_after_max#*|}
   # normalize empty strings to unset so wait_for picks defaults
   max_timeout=${max_timeout:-}
   connect_timeout=${connect_timeout:-}
+  svc=${svc:-}
   if ! wait_for "${url}" "${name}" "${max_timeout}" "${connect_timeout}"; then
     if [ "${svc}" = "cadvisor" ]; then
       # On GitHub Actions runners cadvisor often can't access host mounts.
