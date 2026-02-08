@@ -9,9 +9,11 @@ import { FaroRoutes, initializeFaro } from '@grafana/faro-react';
 import { getWebInstrumentations } from '@grafana/faro-web-sdk';
 // import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+const SENTRY_DSN = process.env.SENTRY_DSN_FRONTEND || undefined;
+
 Sentry.init({
-  // TODO: replace with your own DSN
-  dsn: "https://123456789.ingest.sentry.io/123456789",
+  // DSN is injected at build/run time via webpack DefinePlugin or environment
+  dsn: SENTRY_DSN,
   integrations: [
     new Sentry.BrowserTracing({}), new Sentry.Replay()
   ],

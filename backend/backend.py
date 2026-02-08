@@ -1,6 +1,7 @@
 import logging
 import logging_loki
 import sentry_sdk
+import os
 
 from multiprocessing import Queue
 
@@ -32,9 +33,11 @@ logging.basicConfig(
     ]
 )
 
+SENTRY_DSN = os.environ.get('SENTRY_DSN_BACKEND')
+
 sentry_sdk.init(
-    # TODO: Replace the DSN below with your own DSN to see the events in your Sentry project
-    dsn="https://123456789.ingest.us.sentry.io/123456789",
+    # DSN can be provided via the SENTRY_DSN_BACKEND environment variable
+    dsn=SENTRY_DSN,
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for tracing.
     traces_sample_rate=1.0,

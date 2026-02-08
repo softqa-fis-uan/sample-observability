@@ -9,13 +9,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SENTRY_DSN_FRONTEND: ${{ secrets.SENTRY_DSN_FRONTEND }}
+      SENTRY_DSN_BACKEND: ${{ secrets.SENTRY_DSN_BACKEND }}
     steps:
     - uses: actions/checkout@v4
     - name: Build with Docker compose
       run: docker compose build
     - name: Start services
       run: docker compose up -d
-    - name: Test
-      run: curl http://localhost:5000/api/data
+    - name: Run some checks (service health checks)
+      run: |
+        chmod +x ./.github/scripts/somechecks.sh
+        bash ./.github/scripts/somechecks.sh
+
     - name: Tear down
+      if: always()
       run: docker compose down
