@@ -7,13 +7,15 @@ set -euo pipefail
 
 readonly RETRIES=30
 readonly WAIT=2
+readonly DEFAULT_CURL_TIMEOUT=5
 
 wait_for() {
   local url="$1"
   local name="$2"
-  echo "Checking ${name} at ${url}"
+  local timeout="${3:-$DEFAULT_CURL_TIMEOUT}"
+  echo "Checking ${name} at ${url} (timeout ${timeout}s)"
   for i in $(seq 1 ${RETRIES}); do
-    if curl --max-time 5 -sSf -I "${url}" >/dev/null 2>&1; then
+    if curl -v --max-time "${timeout}" -sSf -I "${url}" >/dev/null 2>&1; then
       echo "${name} is reachable"
       return 0
     fi
@@ -36,19 +38,23 @@ dump_logs_and_exit() {
 
 # Services and endpoints to check (host ports from docker-compose)
 checks=(
-  "http://localhost:5000/api/data|backend (5000)"
-  "http://localhost:3000/|frontend dev server (3000)"
-  # Loki readiness: try /ready first (lighter), fall back to /loki/api/v1/labels
-  # The script handles this special-case below.
-  "http://localhost:9090/-/ready|prometheus (9090)"
-  "http://localhost:3200/api/health|grafana (3200)"
-  "http://localhost:8080/metrics|cadvisor (8080)"
+  # format: url|display name|optional timeout
+  "http://localhost:5000/api/data|backend (5000)|"
+  "http://localhost:3000/|frontend dev server (3000)|"
+  # Loki readiness: handled specially below (no entry here)
+  "http://localhost:9090/-/ready|prometheus (9090)|"
+  "http://localhost:3200/api/health|grafana (3200)|"
+  # cadvisor can be slow; set a larger timeout (e.g. 30s). If empty, DEFAULT_CURL_TIMEOUT is used.
+  "http://localhost:8080/metrics|cadvisor (8080)|30"
 )
 
 for entry in "${checks[@]}"; do
   url=${entry%%|*}
-  name=${entry##*|}
-  if ! wait_for "${url}" "${name}"; then
+  rest=${entry#*|}
+  name=${rest%%|*}
+  timeout=${rest##*|}
+  timeout=${timeout:-}
+  if ! wait_for "${url}" "${name}" "${timeout}"; then
     echo "Health check failed for ${name} (${url})"
     dump_logs_and_exit
   fi
