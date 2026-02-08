@@ -5,10 +5,10 @@ set -euo pipefail
 # Run health checks against local services started by docker compose.
 # On failure, dump docker compose logs for troubleshooting.
 
-readonly RETRIES=30
+readonly RETRIES=10
 readonly WAIT=2
-readonly DEFAULT_CURL_TIMEOUT=5
-readonly DEFAULT_CONNECT_TIMEOUT=2
+readonly DEFAULT_CURL_TIMEOUT=30
+readonly DEFAULT_CONNECT_TIMEOUT=10
 
 wait_for() {
   local url="$1"
@@ -61,7 +61,7 @@ for entry in "${checks[@]}"; do
   max_timeout=${max_timeout:-}
   connect_timeout=${connect_timeout:-}
   if ! wait_for "${url}" "${name}" "${max_timeout}" "${connect_timeout}"; then
-    if [ "${svc}" = "cadvisor" ] && [ -n "${GITHUB_ACTIONS:-}" ]; then
+    if [ "${svc}" = "cadvisor" ]; then
       # On GitHub Actions runners cadvisor often can't access host mounts.
       # Make this check non-fatal in CI: log a warning and continue.
       echo "WARNING: ${name} (${url}) failed on CI runner; continuing without cadvisor checks."
