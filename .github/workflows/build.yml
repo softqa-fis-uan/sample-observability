@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SENTRY_DSN_FRONTEND: ${{ secrets.SENTRY_DSN_FRONTEND }}
+      SENTRY_DSN_BACKEND: ${{ secrets.SENTRY_DSN_BACKEND }}
     steps:
     - uses: actions/checkout@v4
     - name: Build with Docker compose

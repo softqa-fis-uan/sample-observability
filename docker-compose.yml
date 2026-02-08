@@ -5,6 +5,8 @@ services:
   backend:
     privileged: true
     build: ./backend
+    environment:
+      - SENTRY_DSN_BACKEND=${SENTRY_DSN_BACKEND:-}
     ports:
       - "5000:5000"
     networks:
@@ -12,6 +14,8 @@ services:
   frontend:
     privileged: true
     build: ./frontend
+    environment:
+      - SENTRY_DSN_FRONTEND=${SENTRY_DSN_FRONTEND:-}
     ports:
       - "3000:3000"
     networks:

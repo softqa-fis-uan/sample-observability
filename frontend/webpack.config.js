@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
@@ -10,6 +11,10 @@ module.exports = {
   },
     devtool: "source-map",
   plugins: [
+    // Inject SENTRY DSN from environment into the frontend bundle at build time
+    new webpack.DefinePlugin({
+      'process.env.SENTRY_DSN_FRONTEND': JSON.stringify(process.env.SENTRY_DSN_FRONTEND || ''),
+    }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, "public", "index.html"),
     }),
