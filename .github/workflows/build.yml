@@ -15,7 +15,11 @@ jobs:
       run: docker compose build
     - name: Start services
       run: docker compose up -d
-    - name: Test
-      run: curl http://localhost:5000/api/data
+    - name: Run some checks (service health checks)
+      run: |
+        chmod +x ./.github/scripts/somechecks.sh
+        bash ./.github/scripts/somechecks.sh
+
     - name: Tear down
+      if: always()
       run: docker compose down
