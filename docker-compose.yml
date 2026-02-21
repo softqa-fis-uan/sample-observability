@@ -28,7 +28,7 @@ services:
       - observability
 
   promtail:
-    image: grafana/promtail:3.6.5
+    image: grafana/promtail:3.6.6
     volumes:
       # System logs
       - /var/log:/var/log:ro
