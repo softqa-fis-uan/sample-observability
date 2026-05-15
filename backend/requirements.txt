@@ -1,6 +1,6 @@
 Flask==3.1.3
 gunicorn==26.0.0
-sentry-sdk==2.58.0
+sentry-sdk==2.59.0
 python-logging-loki==0.3.1
 prometheus-client
 uwsgi
