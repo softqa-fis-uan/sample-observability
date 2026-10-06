@@ -27,7 +27,7 @@
   "dependencies": {
     "@grafana/faro-react": "^2.12.1",
     "@grafana/faro-web-sdk": "^2.10.0",
-    "@sentry/react": "^11.0.0",
+    "@sentry/react": "^11.1.0",
     "react": "^19.2.6",
     "react-dom": "^19.3.0"
   }
