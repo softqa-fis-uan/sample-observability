@@ -43,7 +43,7 @@ services:
       - observability
 
   cadvisor:
-    image: google/cadvisor
+    image: ghcr.io/google/cadvisor:0.60.6
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -95,7 +95,7 @@ services:
           editable: true
         EOF
         /run.sh
-    image: grafana/grafana:latest
+    image: grafana/grafana:13.2.5
     ports:
       - "3200:3000"
     networks:
