@@ -15,7 +15,11 @@ Sentry.init({
   // DSN is injected at build/run time via webpack DefinePlugin or environment
   dsn: SENTRY_DSN,
   integrations: [
-    new Sentry.BrowserTracing({}), new Sentry.Replay()
+    Sentry.browserTracingIntegration(), 
+    Sentry.replayIntegration({ 
+      maskAllText: true, 
+      blockAllMedia: true, 
+    }),
   ],
 
   // Set tracesSampleRate to 1.0 to capture 100%

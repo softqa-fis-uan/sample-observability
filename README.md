@@ -1,6 +1,6 @@
 # Observabilidad
 
-Este proyecto incluye ejemplos de observabilidad en una aplicación usando Sentry.
+Este proyecto incluye ejemplos de observabilidad en una aplicación usando Grafana, Sentry, y Prometheus.
 
 - Trazas
 - Logs
@@ -27,7 +27,7 @@ Este proyecto usa contenedores por lo que necesitará tener instalado Docker. **
    docker compose down
    ```
 
-La aplicación esta compuesta por varios servicios: 
+La aplicación esta compuesta por varios servicios:
 
 ```mermaid
 architecture-beta
