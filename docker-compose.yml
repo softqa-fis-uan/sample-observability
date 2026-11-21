@@ -43,7 +43,7 @@ services:
       - observability
 
   cadvisor:
-    image: ghcr.io/google/cadvisor:0.60.6
+    image: ghcr.io/google/cadvisor:v0.61.1
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
